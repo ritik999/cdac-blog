@@ -17,7 +17,14 @@ import Layout from "./Layout.jsx";
 import Projects from "./pages/Projects.jsx";
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux/store.js";
+// import {store, persistor} from './redux/store.js';
 import { PersistGate } from "redux-persist/integration/react";
+import TheamProvider from "./components/TheamProvider.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import OnlyAdminProtectedRoute from "./components/OnlyAdminProtectedRoute.jsx";
+import CreatePost from "./pages/CreatePost.jsx";
+import UpdatePost from "./pages/UpdatePost.jsx";
+import PostPage from "./pages/PostPage.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,7 +34,14 @@ const router = createBrowserRouter(
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/projects" element={<Projects />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/post/:postId" element={<PostPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
+      <Route element={<OnlyAdminProtectedRoute />}>
+        <Route path="/create-post" element={<CreatePost />} />
+        <Route path="/update-post/:postId" element={<UpdatePost />} />
+      </Route>
     </Route>
   )
 );
@@ -35,7 +49,9 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <PersistGate persistor={persistor}>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <TheamProvider>
+        <RouterProvider router={router} />
+      </TheamProvider>
     </Provider>
   </PersistGate>
 );

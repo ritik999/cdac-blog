@@ -9,7 +9,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({});
   const navigate=useNavigate();
   const dispatch=useDispatch();
-  const {loading, error:errorMessage}=useSelector(state=>state.user);
+  const {loading, error:errorMessage}=useSelector(state=>state.userData);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -79,7 +79,7 @@ const Signup = () => {
               <TextInput
                 type="text"
                 placeholder="email"
-                id="username"
+                id="email"
                 onChange={handleChange}
               />
             </div>
@@ -89,7 +89,7 @@ const Signup = () => {
               <TextInput
                 type="password"
                 placeholder="password"
-                id="username"
+                id="password"
                 onChange={handleChange}
               />
             </div>

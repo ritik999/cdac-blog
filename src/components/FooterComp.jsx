@@ -5,7 +5,7 @@ import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from 'react-
 
 const FooterComp = () => {
   return (
-    <Footer className="border-2 border-t-8 border-teal-500" container>
+    <Footer className="border-2 border-t-8 border-teal-500 mt-10" container>
       <div className="w-full grid gap-10 md:gap-4 grid-cols-1 md:grid-cols-2">
         <div className="font-semibold dark:text-white flex-1">
           <Link to="/" className="font-bold text-2xl dark:text-white">

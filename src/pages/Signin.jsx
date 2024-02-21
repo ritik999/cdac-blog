@@ -2,12 +2,15 @@ import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../redux/user/userSlice";
 
 const Signip = () => {
   const [formData, setFormData] = useState({});
   const [errorMessage,setErrorMessage]=useState(null);
   const [loading,setLoading]=useState(false);
   const navigate=useNavigate();
+  const dispatch=useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -17,7 +20,7 @@ const Signip = () => {
   const handleSubmit=async(e)=>{
     e.preventDefault();
 
-    if(!formData.username || !formData.email || !formData.password){
+    if(!formData.email || !formData.password){
       return setErrorMessage('Please fill out all the fields.');
     }
 
@@ -37,6 +40,7 @@ const Signip = () => {
       setLoading(false);
 
       if(res.ok){
+        dispatch(signInSuccess(data))
         return navigate('/')
       }
     } catch (error) {
