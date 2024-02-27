@@ -1,9 +1,10 @@
-import { getStorage } from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react'
 import React, { useState } from 'react'
 import { CircularProgressbar } from 'react-circular-progressbar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { app } from '../firebase';
 
 const CreatePost = () => {
     const [file,setFile]=useState(null);
@@ -12,7 +13,9 @@ const CreatePost = () => {
     const [formData,setFormData]=useState({});
     const [publishError,setPublishError]=useState(null);
 
+    console.log(formData.coverImage)
     const handleImageUpload=()=>{
+        console.log('img upload start');
         if(!file){
             setImageUplaodError('Please select an image');
             return;
@@ -21,31 +24,38 @@ const CreatePost = () => {
         setImageUplaodError(null);
         // setIsImageUploading(true);
         const storage = getStorage(app);
-        const fileName = new Date().getTime() + imageFile.name;
-      
-        const storageRef = ref(storage, `image/${imageFile.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, fileName);
+        const fileName = new Date().getTime() + file.name;
+        console.log(fileName);
+        const storageRef = ref(storage, `postImg/${fileName}`);
+        console.log(storageRef);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        console.log(uploadTask);
 
         uploadTask.on(
           "state_changed",
           (snapshot) => {
+            console.log(snapshot);
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
               setImageUploadProgress(progress.toFixed(0));
+              console.log(progress);
           },
           (error) => {
             // setImageFileUploadError('Could not upload image (File must be less than 2MB) ',error)
-            imageUploadError(error.message);
-            imageUploadProgress(null);
+            setImageUplaodError(error.message);
+            setImageUploadProgress(null);
             // setDownloadImageUrl(null);
             // setIsImageUploading(false);
+            console.log(error);
           },
           () => {
             getDownloadURL(uploadTask.snapshot.ref)
               .then((downloadURL) => {
                 // setDownloadImageUrl(downloadURL);
+                console.log(downloadURL);
                 setFormData({ ...formData, coverImage: downloadURL });
                 // setIsImageUploading(false);
+                setImageUploadProgress(null);
               })
               .catch((e) => console.log(e.message));
           }
@@ -57,7 +67,7 @@ const CreatePost = () => {
         e.preventDefault();
         setPublishError(null);
         try {
-            const res=await fetch('/api/v1/post/create',{
+            const res=await fetch('/api/v1/posts/create',{
                 method:'POST',
                 headers:{
                 'Content-Type':'application/json',
@@ -89,16 +99,15 @@ const CreatePost = () => {
                 </Select>
             </div>
             <div className='flex justify-between gap-4 flex-col md:flex-row border-4 border-teal-500 border-dotted p-3'>
-                <FileInput className='flex-1' type='file' accept='image/*' onChange={(e)=>setFile(e.target.files[0])} />
+                <FileInput className='flex-1' type='file' accept='image/*' onChange={(e)=>{setFile(e.target.files[0])}} />
                 <Button type='button' gradientDuoTone='purpleToBlue' size='sm' onClick={handleImageUpload} outline>
                     {
                         imageUploadProgress ? (
                             <div className='w-16 h-16'>
                             <CircularProgressbar value={imageUploadProgress} text={`${imageUploadProgress || 0}`} />
                             </div>
-                        ): 'upload image'
+                        ): 'Upload Image'
                     }
-                    Upload Image
                 </Button>
             </div>
             {

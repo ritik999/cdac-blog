@@ -39,6 +39,7 @@ const DashProfile = () => {
   const filePickerRef = useRef();
   const dispatch = useDispatch();
   const navitage=useNavigate();
+  // console.log(currentUser);
 
   console.log(imageFileUploadProgress, imageFileUploadError, downloadImageUrl);
   const handleImageChange = (e) => {
@@ -251,9 +252,9 @@ const DashProfile = () => {
         >
           {loading ? "loading..." : "submit"}
         </Button>
-        {currentUser.role == "admin" && (
+        {currentUser?.user?.userRole == "admin" && (
             <Link to={"/create-post"}>
-              <Button type="button" gradientDuoTone={"purpleToPink"}>
+              <Button className="w-full" type="button" gradientDuoTone={"purpleToPink"}>
                 Create a post
               </Button>
             </Link>

@@ -4,7 +4,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 const OnlyAdminProtectedRoute = () => {
     const {currentUser}=useSelector(state=>state.userData);
-  return currentUser && currentUser.role=='admin' ? <Outlet /> : <Navigate to='/sign-in'/>
+  return currentUser && currentUser?.user?.userRole=='admin' ? <Outlet /> : <Navigate to='/sign-in'/>
     
 }
 

@@ -34,7 +34,7 @@ const router = createBrowserRouter(
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/projects" element={<Projects />} />
-      <Route path="/post/:postId" element={<PostPage />} />
+      <Route path="/post/:postSlug" element={<PostPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>

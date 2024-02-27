@@ -16,7 +16,7 @@ const OAuth = () => {
     provider.setCustomParameters({prompt:'select_account'});
     try {
       const resultsFromGoogle= await signInWithPopup(auth,provider);
-      const res=await fetch('/api/v1/auth/google',{
+      const res=await fetch('/api/v1/users/google',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
@@ -25,7 +25,8 @@ const OAuth = () => {
           googlePhotoUrl:resultsFromGoogle.user.photoURL
         })
       })
-      const data=res.json();
+      const data=await res.json();
+      console.log(data);
       if(res.ok){
         dispatch(signInSuccess(data))
         navigate('/');

@@ -13,10 +13,10 @@ export default function DashUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`/api/user/getusers`);
+        const res = await fetch(`/api/v1/users/getusers`);
         const data = await res.json();
         if (res.ok) {
-          setUsers(data.users);
+          setUsers(data.user);
           if (data.users.length < 9) {
             setShowMore(false);
           }
@@ -25,7 +25,7 @@ export default function DashUsers() {
         console.log(error.message);
       }
     };
-    if (currentUser.isAdmin) {
+    if (currentUser.user.userRole==='admin') {
       fetchUsers();
     }
   }, [currentUser._id]);
@@ -33,11 +33,12 @@ export default function DashUsers() {
   const handleShowMore = async () => {
     const startIndex = users.length;
     try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
+      const res = await fetch(`/api/v1/users/getusers?startIndex=${startIndex}`);
       const data = await res.json();
       if (res.ok) {
-        setUsers((prev) => [...prev, ...data.users]);
-        if (data.users.length < 9) {
+        setUsers((prev) => [...prev, ...data.user]);
+        if (data.user.length < 9) {
+          // console.log(data.user.length);
           setShowMore(false);
         }
       }
@@ -48,7 +49,7 @@ export default function DashUsers() {
 
   const handleDeleteUser = async () => {
     try {
-        const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        const res = await fetch(`/api/v1/users/delete/${userIdToDelete}`, {
             method: 'DELETE',
         });
         const data = await res.json();
@@ -65,7 +66,7 @@ export default function DashUsers() {
 
   return (
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      {currentUser.isAdmin && users.length > 0 ? (
+      {currentUser.user.userRole==='admin' && users.length > 0 ? (
         <>
           <Table hoverable className='shadow-md'>
             <Table.Head>
@@ -92,7 +93,7 @@ export default function DashUsers() {
                   <Table.Cell>{user.username}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
-                    {user.isAdmin ? (
+                    {user.userRole==='admin' ? (
                       <FaCheck className='text-green-500' />
                     ) : (
                       <FaTimes className='text-red-500' />

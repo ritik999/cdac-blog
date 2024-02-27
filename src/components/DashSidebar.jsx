@@ -1,14 +1,14 @@
 import { Sidebar } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import {
-  HiChartPie,
-  HiViewBoards,
-  HiInbox,
-  HiArrowSmRight,
-  HiTable,
+  HiUser,
+  HiDocumentText,
+  HiOutlineUserGroup,
+  HiArrowSmRight
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 const DashSidebar = () => {
   const location = useLocation();
@@ -22,39 +22,61 @@ const DashSidebar = () => {
       setTab(tabFromUrl);
     }
   }, [location.search]);
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch(`/api/v1/users/signout/${currentUser.user._id}`, {
+        method: "GET",
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+        // navitage('/sign-in')
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <Sidebar className="w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
-              label={currentUser.role=='admin'?'admin':'user'}
+              label={currentUser.user.userRole=='admin'?'admin':'user'}
               labelColor="dark"
               active={tab == "profile"}
-              icon={HiChartPie}
+              icon={HiUser}
               as="div"
             >
               Profile
             </Sidebar.Item>
           </Link>
 
-          {currentUser.role == "admin" && (
+          {currentUser.user.userRole == "admin" && (
             <Link to="/dashboard?tab=posts">
-              <Sidebar.Item icon={HiViewBoards} active={tab == "posts"} as='div'>
+              <Sidebar.Item icon={HiDocumentText} active={tab == "posts"} as='div'>
                 Post
               </Sidebar.Item>
             </Link>
           )}
 
-          <Sidebar.Item href="#" icon={HiInbox} label="3">
-            Inbox
+          {currentUser.user.userRole == "admin" && (
+            <Link to="/dashboard?tab=users">
+              <Sidebar.Item icon={HiOutlineUserGroup} active={tab == "users"} as='div'>
+                Users
+              </Sidebar.Item>
+            </Link>
+          )}
+
+          <Sidebar.Item className="cursor-pointer" icon={HiArrowSmRight} onClick={handleSignout}>
+            Sign Out
           </Sidebar.Item>
-          <Sidebar.Item href="#" icon={HiArrowSmRight}>
-            Sign In
-          </Sidebar.Item>
-          <Sidebar.Item href="#" icon={HiTable}>
-            Sign Up
-          </Sidebar.Item>
+
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

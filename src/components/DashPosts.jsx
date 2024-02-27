@@ -14,19 +14,21 @@ export default function DashPosts() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
+        const res = await fetch(`/api/v1/posts/getposts?userId=${currentUser.user._id}`);
         const data = await res.json();
+        console.log(data);
         if (res.ok) {
           setUserPosts(data.posts);
           if (data.posts.length < 9) {
             setShowMore(false);
           }
         }
+       
       } catch (error) {
         console.log(error.message);
       }
     };
-    if (currentUser.isAdmin) {
+    if (currentUser.user.userRole==='admin') {
       fetchPosts();
     }
   }, [currentUser._id]);
@@ -35,9 +37,10 @@ export default function DashPosts() {
     const startIndex = userPosts.length;
     try {
       const res = await fetch(
-        `/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
+        `/api/v1/posts/getposts?userId=${currentUser.user._id}&startIndex=${startIndex}`
       );
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         setUserPosts((prev) => [...prev, ...data.posts]);
         if (data.posts.length < 9) {
@@ -53,7 +56,7 @@ export default function DashPosts() {
     setShowModal(false);
     try {
       const res = await fetch(
-        `/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
+        `/api/v1/posts/deletepost/${postIdToDelete}/${currentUser._id}`,
         {
           method: 'DELETE',
         }
@@ -73,7 +76,7 @@ export default function DashPosts() {
 
   return (
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {currentUser.user.userRole==='admin' && userPosts.length > 0 ? (
         <>
           <Table hoverable className='shadow-md'>
             <Table.Head>
@@ -133,14 +136,14 @@ export default function DashPosts() {
               </Table.Body>
             ))}
           </Table>
-          {/* {showMore && ( */}
+          {showMore && (
             <button
               onClick={handleShowMore}
               className='w-full text-teal-500 self-center text-sm py-7'
             >
               Show more
             </button>
-          {/* )} */}
+           )} 
         </>
       ) : (
         <p>You have no posts yet!</p>
